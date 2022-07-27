@@ -1,6 +1,7 @@
 import { PostsServices } from './Post.service';
 import { Post } from './Post.Model';
-import { Component, Input } from "@angular/core";
+import { Component} from "@angular/core";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-post-list',
@@ -13,7 +14,21 @@ export class PostListComponent{
   //   {title : "Second title", content : "Second content"},
   //   {title : "Third title", content : "Third content"},
   // ];
- @Input() posts : Post []=[];
-
+ posts : Post []=[];
+ private postsSub : Subscription;
  constructor(public PostsServices:PostsServices){}
+
+ ngOnInit(){
+ this.PostsServices.getPosts();
+  this.postsSub =this.PostsServices.getPostUpdateListener()
+  .subscribe((posts: Post[]) =>{
+    this.posts=posts;
+
+  });
+ }
+
+ ngOnDestroy(){
+  this.postsSub.unsubscribe();
+ }
+
 }
